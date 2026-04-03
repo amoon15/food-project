@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تطبيق الغذاء الذكي</title>
+    <style>
+        :root { --primary: #4CAF50; --secondary: #2196F3; --danger: #f44336; --dark: #333; --light: #f9f9f9; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: #eef2f3; margin: 0; padding: 0; padding-bottom: 70px; }
+        
+        /* Navigation Bar */
+        .navbar { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 10px 0; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); z-index: 100; }
+        .nav-item { cursor: pointer; text-align: center; color: #777; font-size: 12px; flex: 1; }
+        .nav-item.active { color: var(--primary); font-weight: bold; }
+        .nav-item i { display: block; font-size: 20px; margin-bottom: 3px; }
+
+        /* Containers */
+        .page { display: none; padding: 20px; animation: fadeIn 0.3s; }
+        .active-page { display: block; }
+        .card { background: white; border-radius: 20px; padding: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        
+        /* Profile Header */
+        .profile-header { text-align: center; padding: 20px; }
+        .avatar { width: 80px; height: 80px; background: #ddd; border-radius: 50%; margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; font-size: 40px; }
+
+        /* UI Elements */
+        h2 { color: var(--dark); margin-top: 0; }
+        select, input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #ddd; margin-top: 10px; box-sizing: border-box; }
+        .btn { background: var(--primary); color: white; border: none; padding: 15px; border-radius: 10px; width: 100%; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .meal-img { width: 100%; height: 200px; object-fit: cover; border-radius: 15px; margin-top: 15px; display: none; border: 2px solid #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        
+        /* Alert Boxes */
+        .warning { background: #fff5f5; border-right: 5px solid var(--danger); padding: 15px; border-radius: 8px; color: #b71c1c; margin-top: 15px; }
+        .tip { background: #e8f5e9; border-right: 5px solid var(--primary); padding: 15px; border-radius: 8px; color: #1b5e20; margin-top: 10px; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body>
+
+    <div id="home" class="page active-page">
+        <h2>📂 قائمة الوجبات</h2>
+        <div class="card">
+            <label>اختر وجبة من القائمة الجاهزة:</label>
+            <select id="mealSelect" onchange="showData('select')">
+                <option value="">-- اختر --</option>
+                <option value="pizza">بيتزا خضار</option>
+                <option value="burger">برجر مشوي</option>
+                <option value="salad">سلطة خضراء</option>
+            </select>
+        </div>
+        <div id="resultHome"></div>
+    </div>
+
+    <div id="camera" class="page">
+        <h2>📸 فحص الوجبة</h2>
+        <div class="card" style="text-align: center;">
+            <p>التقط صورة لوجبتك للتحليل</p>
+            <input type="file" id="fileInput" accept="image/*" capture="environment" style="display:none;" onchange="handleCapture(event)">
+            <button class="btn" onclick="document.getElementById('fileInput').click()">فتح الكاميرا</button>
+            <img id="capturePreview" class="meal-img">
+        </div>
+        <div id="resultCamera"></div>
+    </div>
+
+    <div id="profile" class="page">
+        <div class="profile-header">
+            <div class="avatar">👤</div>
+            <h2 id="userNameDisplay">المستخدم</h2>
+        </div>
+        <div class="card">
+            <h3>⚙️ الإعدادات الصحية</h3>
+            <label>الاسم:</label>
+            <input type="text" id="userName" placeholder="اكتب اسمك" oninput="updateProfile()">
+            <label>الحالة الصحية:</label>
+            <select id="healthStatus" onchange="updateProfile()">
+                <option value="none">سليم (لا توجد أمراض)</option>
+                <option value="diabetes">مصاب بالسكري</option>
+            </select>
+            <label>الحساسية:</label>
+            <input type="text" id="allergyInput" placeholder="مثلاً: مكسرات، حليب" oninput="updateProfile()">
+        </div>
+    </div>
+
+    <div class="navbar">
+        <div class="nav-item active" onclick="switchPage('home', this)">🏠<br>الرئيسية</div>
+        <div class="nav-item" onclick="switchPage('camera', this)">📸<br>كاميرا</div>
+        <div class="nav-item" onclick="switchPage('profile', this)">👤<br>الملف الشخصي</div>
+    </div>
+
+    <script>
+        const mealDB = {
+            pizza: { name: "بيتزا خضار", cal: 280, ing: "دقيق، طماطم، جبن", sugar: "عالي", allergy: "جلوتين، ألبان" },
+            burger: { name: "برجر مشوي", cal: 450, ing: "لحم، خبز، خس", sugar: "متوسط", allergy: "جلوتين" },
+            salad: { name: "سلطة خضراء", cal: 110, ing: "خيار، طماطم، زيت", sugar: "منخفض", allergy: "لا يوجد" }
+        };
+
+        let userSettings = { name: "المستخدم", status: "none", allergy: "" };
+
+        function switchPage(pageId, el) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
+            document.getElementById(pageId).classList.add('active-page');
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            el.classList.add('active');
+        }
+
+        function updateProfile() {
+            userSettings.name = document.getElementById('userName').value || "المستخدم";
+            userSettings.status = document.getElementById('healthStatus').value;
+            userSettings.allergy = document.getElementById('allergyInput').value;
+            document.getElementById('userNameDisplay').innerText = userSettings.name;
+        }
+
+        function handleCapture(event) {
+            const preview = document.getElementById('capturePreview');
+            preview.src = URL.createObjectURL(event.target.files[0]);
+            preview.style.display = 'block';
+            
+            // Simulating AI recognition after picture
+            setTimeout(() => {
+                const mealName = prompt("ماذا أكلت؟ (بيتزا، برجر، سلطة)");
+                if(mealName) showData('camera', mealName);
+            }, 500);
+        }
+
+        function showData(mode, manualName = "") {
+            const mealKey = mode === 'select' ? document.getElementById('mealSelect').value : manualName;
+            const targetDiv = mode === 'select' ? document.getElementById('resultHome') : document.getElementById('resultCamera');
+            
+            const meal = mealDB[mealKey] || mealDB['pizza']; // Default to pizza if typed wrong
+
+            let healthWarning = "";
+            if (userSettings.status === 'diabetes' && meal.sugar === 'عالي') {
+                healthWarning = `<div class="warning">⚠️ تنبيه: هذه الوجبة عالية السكر ولا تناسب حالتك (سكري).</div>`;
+            }
+            
+            if (userSettings.allergy && meal.allergy.includes(userSettings.allergy)) {
+                healthWarning += `<div class="warning">⚠️ تحذير: تحتوي الوجبة على (${meal.allergy}) وأنت تعاني من حساسية تجاهها!</div>`;
+            }
+
+            targetDiv.innerHTML = `
+                <div class="card">
+                    <h3>📊 تحليل الوجبة: ${meal.name}</h3>
+                    <p>🔥 <strong>السعرات:</strong> ${meal.cal} سعرة</p>
+                    <p>🥗 <strong>المكونات:</strong> ${meal.ing}</p>
+                    ${healthWarning}
+                    <div class="tip">💡 نصيحة: ${meal.cal > 300 ? 'حاول تقليل الكمية والمشي لمدة 20 دقيقة.' : 'وجبة رائعة وخفيفة، استمر!'}</div>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>
