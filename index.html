@@ -3,96 +3,182 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fashion Star 360</title>
+    <title>Fashionista Real Style 360</title>
     <style>
-        :root { --pink: #ff75a0; --light: #fff0f5; --doll-skin: #f3d0b8; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--light); margin: 0; overflow: hidden; display: flex; flex-direction: column; height: 100vh; }
+        :root { --pink: #ff4d94; --light-pink: #fff0f5; --text: #333; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--light-pink); margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; color: var(--text); }
         
         /* الهيدر */
-        .header { padding: 15px; text-align: center; background: white; border-bottom: 2px solid var(--pink); box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-        .header h1 { margin: 0; font-size: 20px; color: var(--pink); }
+        .header { padding: 15px; text-align: center; background: white; border-bottom: 2px solid var(--pink); z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .header h1 { margin: 0; font-size: 22px; color: var(--pink); letter-spacing: 1px; }
 
-        /* منطقة العرض */
-        .stage { flex: 1; position: relative; display: flex; justify-content: center; align-items: center; perspective: 1000px; }
+        /* منطقة العرض (المسرح) */
+        .stage { flex: 1; position: relative; display: flex; justify-content: center; align-items: center; perspective: 1500px; padding-bottom: 30px; }
 
-        /* الدمية مع دوران 360 */
-        .doll-container { position: relative; width: 150px; height: 350px; transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1); transform-style: preserve-3d; cursor: pointer; }
-        .doll-body { position: absolute; width: 100px; height: 300px; background: var(--doll-skin); border-radius: 50px; left: 25px; top: 50px; }
-        .doll-head { position: absolute; width: 80px; height: 80px; background: var(--doll-skin); border-radius: 50%; left: 35px; top: -30px; }
+        /* حاوية الدمية مع خاصية الدوران الاحترافي */
+        .doll-wrapper {
+            position: relative;
+            width: 180px;
+            height: 400px;
+            transition: transform 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+            border-radius: 50px;
+        }
 
-        /* الملابس على الدمية */
-        .clothing-layer { position: absolute; width: 100px; left: 25px; transition: 0.3s; pointer-events: none; }
-        .top-piece { top: 50px; height: 100px; border-radius: 20px 20px 5px 5px; }
-        .bottom-piece { top: 155px; height: 150px; border-radius: 5px 5px 20px 20px; }
-        .dress-piece { top: 50px; height: 255px; border-radius: 20px 20px 40px 40px; }
+        /* الدمية العارضة (شكل أنيق) */
+        .doll-model {
+            position: absolute;
+            width: 120px; height: 320px;
+            background: #f3d0b8; /* لون بشرة فاتح */
+            border-radius: 60px;
+            left: 30px; top: 70px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border: 2px solid rgba(255,255,255,0.2);
+        }
 
-        /* الخزانة */
-        .closet { height: 220px; background: white; border-top: 3px solid var(--pink); padding: 15px; box-sizing: border-box; }
-        .tabs { display: flex; justify-content: space-around; margin-bottom: 10px; }
-        .tab-btn { border: none; background: none; color: #888; font-weight: bold; cursor: pointer; padding: 5px 10px; }
-        .tab-btn.active { color: var(--pink); border-bottom: 2px solid var(--pink); }
+        /* رأس العارضة */
+        .doll-head {
+            position: absolute;
+            width: 90px; height: 90px;
+            background: #f3d0b8;
+            border-radius: 50%;
+            left: 15px; top: -30px;
+        }
+
+        /* منطقة الملابس (شفافة فوق الدمية) */
+        .outfit-layer { position: absolute; width: 100%; height: 100%; top: 0; left: 0; pointer-events: none; }
         
-        .items-grid { display: flex; overflow-x: auto; gap: 15px; padding: 10px 0; }
-        .item-box { min-width: 70px; height: 70px; border-radius: 15px; border: 2px solid #eee; cursor: pointer; transition: 0.2s; }
-        .item-box:hover { transform: translateY(-5px); border-color: var(--pink); }
+        /* ستايلات واقعية للملابس (Emoji Graphics) */
+        .clothing-piece {
+            position: absolute;
+            font-size: 80px; /* حجم كبير للملابس */
+            text-align: center;
+            width: 120px;
+            left: 30px;
+            transition: 0.3s;
+            z-index: 10;
+        }
 
-        /* زر الدوران */
-        .rotate-btn { position: absolute; top: 20px; right: 20px; background: var(--pink); color: white; border: none; border-radius: 50%; width: 50px; height: 50px; font-size: 20px; cursor: pointer; box-shadow: 0 4px 10px rgba(255,117,160,0.4); }
+        .top-real { top: 60px; font-size: 90px; }
+        .bottom-real { top: 160px; font-size: 95px; }
+        .dress-real { top: 60px; font-size: 140px; } /* الفستان أكبر */
+        .shoes-real { top: 310px; font-size: 60px; z-index: 5; }
+        .bag-real { top: 180px; left: 130px; font-size: 50px; } /* الحقيبة جانبية */
+
+        /* خزانة الملابس (القائمة السفلية) */
+        .closet-panel { height: 260px; background: white; border-top: 3px solid var(--pink); padding: 10px; z-index: 200; box-shadow: 0 -5px 15px rgba(0,0,0,0.05); }
+        .tabs { display: flex; justify-content: space-around; margin-bottom: 15px; border-bottom: 1px solid #eee; }
+        .tab-btn { border: none; background: none; color: #aaa; font-weight: bold; cursor: pointer; font-size: 15px; padding: 10px 15px; transition: 0.2s; }
+        .tab-btn.active { color: var(--pink); border-bottom: 3px solid var(--pink); }
+
+        .items-scroll { display: flex; overflow-x: auto; gap: 15px; padding: 10px 0; scrollbar-width: none; }
+        .item { min-width: 90px; height: 90px; background: rgba(255,240,245,0.5); border: 2px solid #f0f0f0; border-radius: 20px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; font-size: 40px; }
+        .item:hover { transform: scale(1.1) translateY(-5px); border-color: var(--pink); background: white; }
+
+        /* زر الدوران الـ 360 السحري */
+        .btn-360-real {
+            position: absolute; top: 20px; right: 20px;
+            background: linear-gradient(135deg, #ff75a0, #ff4d94); color: white; border: none;
+            width: 60px; height: 60px; border-radius: 50%;
+            font-size: 26px; cursor: pointer; box-shadow: 0 5px 20px rgba(255,117,160,0.5);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 150;
+        }
     </style>
 </head>
 <body>
 
-    <div class="header"><h1>Fashion Star 360 Studio</h1></div>
+    <div class="header">
+        <h1>Fashionista Real Style 360</h1>
+    </div>
 
     <div class="stage">
-        <button class="rotate-btn" onclick="rotate360()">🔄</button>
+        <button class="btn-360-real" onclick="rotateModel()">🔄</button>
         
-        <div class="doll-container" id="myDoll">
-            <div class="doll-body">
+        <div class="doll-wrapper" id="fashionModel">
+            <div class="doll-model">
                 <div class="doll-head"></div>
-                <div id="outfit"></div>
+                <div id="modelOutfit" class="outfit-layer"></div>
             </div>
         </div>
     </div>
 
-    <div class="closet">
+    <div class="closet-panel">
         <div class="tabs">
-            <button class="tab-btn active" onclick="showTab('tops')">بلوزات</button>
-            <button class="tab-btn" onclick="showTab('bottoms')">بناطيل</button>
-            <button class="tab-btn" onclick="showTab('dresses')">فساتين</button>
+            <button class="tab-btn active" onclick="changeCloset('tops', this)">👚 بلوزات</button>
+            <button class="tab-btn" onclick="changeCloset('bottoms', this)">👖 بناطيل</button>
+            <button class="tab-btn" onclick="changeCloset('dresses', this)">👗 فساتين</button>
+            <button class="tab-btn" onclick="changeCloset('shoes', this)">👟 أحذية</button>
+            <button class="tab-btn" onclick="changeCloset('bags', this)">👜 حقائب</button>
         </div>
-        <div id="itemsList" class="items-grid"></div>
+        <div id="itemsGridReal" class="items-scroll">
+            </div>
     </div>
 
     <script>
-        const clothes = {
-            tops: ["#ff99aa", "#66ccff", "#ffcc66", "#a0ff99"],
-            bottoms: ["#444444", "#ccccff", "#cc99ff", "#ffdfba"],
-            dresses: ["#ff4d4d", "#99ff99", "#ffccff", "#ffd700"]
+        // قاعدة بيانات الملابس الواقعية (Emojis)
+        const realClothesDB = {
+            tops: ["👚", "👕", "🧥", "👔", "👘"],
+            bottoms: ["👖", "🩳", "👗", "🩲"], // الملابس السفلية تشمل التنانير
+            dresses: ["👗", "👘", "👰‍♀️"], // فساتين مختلفة
+            shoes: ["👟", "👠", "👢", "👞", "🩴"],
+            bags: ["👜", "🛍️", "🎒", "👝", "👛"]
         };
 
-        let currentOutfit = { top: null, bottom: null, dress: null };
-        let rotation = 0;
+        let currentOutfitReal = { top: null, bottom: null, dress: null, shoes: null, bag: null };
+        let modelRotation = 0;
 
-        function showTab(tab) {
-            const list = document.getElementById('itemsList');
-            list.innerHTML = "";
+        function changeCloset(category, btn) {
+            const grid = document.getElementById('itemsGridReal');
+            grid.innerHTML = "";
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            event.target.classList.add('active');
+            btn.classList.add('active');
 
-            clothes[tab].forEach(color => {
-                const box = document.createElement('div');
-                box.className = "item-box";
-                box.style.backgroundColor = color;
-                box.onclick = () => wear(tab, color);
-                list.appendChild(box);
+            realClothesDB[category].forEach(emoji => {
+                const div = document.createElement('div');
+                div.className = "item";
+                div.innerText = emoji;
+                div.onclick = () => wearReal(category, emoji);
+                grid.appendChild(div);
             });
         }
 
-        function wear(type, color) {
-            if(type === 'dresses') {
-                currentOutfit.top = null; currentOutfit.bottom = null;
-                currentOutfit.dress = color;
+        function wearReal(cat, emoji) {
+            // منطق اللبس الذكي (اخلع الملابس المتعارضة)
+            if(cat === 'dresses') {
+                currentOutfitReal.top = null;
+                currentOutfitReal.bottom = null;
+                currentOutfitReal.dress = emoji;
+            } else if(cat === 'tops' || cat === 'bottoms') {
+                currentOutfitReal.dress = null;
+                currentOutfitReal[cat === 'tops' ? 'top' : 'bottom'] = emoji;
             } else {
-                currentOutfit.dress = null;
-                currentOutfit[type ===
+                currentOutfitReal[cat] = emoji;
+            }
+            renderRealOutfit();
+        }
+
+        function renderRealOutfit() {
+            const layer = document.getElementById('modelOutfit');
+            layer.innerHTML = "";
+            
+            // ترتيب الملابس (الفساتين أولاً، ثم البلوزات والبناطيل)
+            if(currentOutfitReal.dress) layer.innerHTML += `<div class="clothing-piece dress-real">${currentOutfitReal.dress}</div>`;
+            if(currentOutfitReal.top) layer.innerHTML += `<div class="clothing-piece top-real">${currentOutfitReal.top}</div>`;
+            if(currentOutfitReal.bottom) layer.innerHTML += `<div class="piece bottom-style" style="background:${currentOutfitReal.bottom}"></div>`; // بقيت الأشكال الهندسية للبناطيل
+            
+            // إضافة الأحذية والحقائب
+            if(currentOutfitReal.shoes) layer.innerHTML += `<div class="clothing-piece shoes-real">${currentOutfitReal.shoes}</div>`;
+            if(currentOutfitReal.bag) layer.innerHTML += `<div class="clothing-piece bag-real">${currentOutfitReal.bag}</div>`;
+        }
+
+        function rotateModel() {
+            modelRotation += 360;
+            document.getElementById('fashionModel').style.transform = `rotateY(${modelRotation}deg)`;
+        }
+
+        // تحميل القسم الأول عند البداية
+        changeCloset('tops', document.querySelector('.tab-btn'));
+    </script>
+</body>
+</html>
