@@ -3,148 +3,255 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تطبيق الغذاء الذكي</title>
+    <title>NutriSmart Pro</title>
     <style>
-        :root { --primary: #4CAF50; --secondary: #2196F3; --danger: #f44336; --dark: #333; --light: #f9f9f9; }
-        body { font-family: 'Segoe UI', sans-serif; background-color: #eef2f3; margin: 0; padding: 0; padding-bottom: 70px; }
+        :root {
+            --bg: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --primary: #22c55e;
+            --accent: #3b82f6;
+            --text: #f8fafc;
+            --danger: #ef4444;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            background-image: radial-gradient(circle at top right, #1e293b, #0f172a);
+            color: var(--text);
+            margin: 0;
+            padding-bottom: 90px;
+            min-height: 100vh;
+        }
+
+        /* Header Style */
+        .app-header {
+            padding: 30px 20px;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .app-header h1 {
+            margin: 0;
+            font-size: 24px;
+            background: linear-gradient(to right, #22c55e, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Container & Cards */
+        .container { padding: 0 20px; max-width: 500px; margin: 0 auto; }
         
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        /* Inputs & Buttons */
+        select, input {
+            width: 100%;
+            padding: 14px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(15, 23, 42, 0.8);
+            color: white;
+            font-size: 16px;
+            margin-top: 10px;
+            box-sizing: border-box;
+        }
+
+        .btn-main {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 16px;
+            width: 100%;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin-top: 15px;
+        }
+
+        .btn-main:active { transform: scale(0.98); }
+
         /* Navigation Bar */
-        .navbar { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 10px 0; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); z-index: 100; }
-        .nav-item { cursor: pointer; text-align: center; color: #777; font-size: 12px; flex: 1; }
-        .nav-item.active { color: var(--primary); font-weight: bold; }
-        .nav-item i { display: block; font-size: 20px; margin-bottom: 3px; }
+        .nav-bar {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            background: rgba(30, 41, 59, 0.9);
+            backdrop-filter: blur(20px);
+            display: flex;
+            justify-content: space-around;
+            padding: 15px;
+            border-radius: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 1000;
+        }
 
-        /* Containers */
-        .page { display: none; padding: 20px; animation: fadeIn 0.3s; }
+        .nav-link { color: #94a3b8; text-decoration: none; font-size: 12px; text-align: center; flex: 1; cursor: pointer; }
+        .nav-link.active { color: var(--primary); }
+        .nav-link span { display: block; font-size: 22px; margin-bottom: 4px; }
+
+        /* Pages */
+        .page { display: none; animation: slideUp 0.4s ease-out; }
         .active-page { display: block; }
-        .card { background: white; border-radius: 20px; padding: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); margin-bottom: 20px; }
-        
-        /* Profile Header */
-        .profile-header { text-align: center; padding: 20px; }
-        .avatar { width: 80px; height: 80px; background: #ddd; border-radius: 50%; margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; font-size: 40px; }
 
-        /* UI Elements */
-        h2 { color: var(--dark); margin-top: 0; }
-        select, input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #ddd; margin-top: 10px; box-sizing: border-box; }
-        .btn { background: var(--primary); color: white; border: none; padding: 15px; border-radius: 10px; width: 100%; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        .meal-img { width: 100%; height: 200px; object-fit: cover; border-radius: 15px; margin-top: 15px; display: none; border: 2px solid #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        
-        /* Alert Boxes */
-        .warning { background: #fff5f5; border-right: 5px solid var(--danger); padding: 15px; border-radius: 8px; color: #b71c1c; margin-top: 15px; }
-        .tip { background: #e8f5e9; border-right: 5px solid var(--primary); padding: 15px; border-radius: 8px; color: #1b5e20; margin-top: 10px; }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        /* Result Styles */
+        .result-box {
+            padding: 15px;
+            border-radius: 15px;
+            margin-top: 15px;
+            border-right: 4px solid var(--primary);
+            background: rgba(34, 197, 94, 0.1);
+        }
+
+        .warning-box {
+            border-right-color: var(--danger);
+            background: rgba(239, 68, 68, 0.1);
+            color: #fca5a5;
+        }
+
+        .meal-preview {
+            width: 100%;
+            height: 200px;
+            border-radius: 18px;
+            object-fit: cover;
+            margin-top: 15px;
+            display: none;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
     </style>
 </head>
 <body>
 
-    <div id="home" class="page active-page">
-        <h2>📂 قائمة الوجبات</h2>
-        <div class="card">
-            <label>اختر وجبة من القائمة الجاهزة:</label>
-            <select id="mealSelect" onchange="showData('select')">
-                <option value="">-- اختر --</option>
-                <option value="pizza">بيتزا خضار</option>
-                <option value="burger">برجر مشوي</option>
-                <option value="salad">سلطة خضراء</option>
-            </select>
-        </div>
-        <div id="resultHome"></div>
+    <div class="app-header">
+        <h1>NutriSmart AI</h1>
     </div>
 
-    <div id="camera" class="page">
-        <h2>📸 فحص الوجبة</h2>
-        <div class="card" style="text-align: center;">
-            <p>التقط صورة لوجبتك للتحليل</p>
-            <input type="file" id="fileInput" accept="image/*" capture="environment" style="display:none;" onchange="handleCapture(event)">
-            <button class="btn" onclick="document.getElementById('fileInput').click()">فتح الكاميرا</button>
-            <img id="capturePreview" class="meal-img">
+    <div class="container">
+        
+        <div id="home" class="page active-page">
+            <div class="card">
+                <h3 style="margin-top:0">🍱 اختر وجبتك</h3>
+                <select id="mealSelect" onchange="showInfo('home')">
+                    <option value="">تصفح الوجبات...</option>
+                    <option value="mandi">مندي دجاج 🍗</option>
+                    <option value="shawarma">شاورما صاج 🌯</option>
+                    <option value="pizza">بيتزا خضار 🍕</option>
+                    <option value="salad">سلطة يونانية 🥗</option>
+                    <option value="pasta">باستا فرن 🍝</option>
+                    <option value="burger">برجر مشوي 🍔</option>
+                    <option value="oats">شوفان وعسل 🥣</option>
+                    <option value="steak">ستيك بقري 🥩</option>
+                </select>
+            </div>
+            <div id="resHome"></div>
         </div>
-        <div id="resultCamera"></div>
+
+        <div id="scan" class="page">
+            <div class="card" style="text-align: center;">
+                <h3 style="margin-top:0">📸 فحص ذكي</h3>
+                <p style="color: #94a3b8">ارفع صورة الوجبة لتحليل المكونات</p>
+                <button class="btn-main" onclick="document.getElementById('imgFile').click()">التقط صورة الآن</button>
+                <input type="file" id="imgFile" accept="image/*" capture="environment" style="display:none" onchange="handleImg(event)">
+                <img id="prev" class="meal-preview">
+            </div>
+            <div id="resScan"></div>
+        </div>
+
+        <div id="profile" class="page">
+            <div class="card">
+                <h3 style="margin-top:0">👤 الملف الصحي</h3>
+                <label>الاسم</label>
+                <input type="text" id="uName" placeholder="أدخل اسمك..." oninput="updateU()">
+                
+                <label style="display:block; margin-top:15px">الحالة الصحية</label>
+                <select id="uStatus" onchange="updateU()">
+                    <option value="normal">بصحة جيدة</option>
+                    <option value="diab">مصاب بالسكري</option>
+                    <option value="fit">لياقة بدنية (عالي البروتين)</option>
+                </select>
+            </div>
+        </div>
+
     </div>
 
-    <div id="profile" class="page">
-        <div class="profile-header">
-            <div class="avatar">👤</div>
-            <h2 id="userNameDisplay">المستخدم</h2>
-        </div>
-        <div class="card">
-            <h3>⚙️ الإعدادات الصحية</h3>
-            <label>الاسم:</label>
-            <input type="text" id="userName" placeholder="اكتب اسمك" oninput="updateProfile()">
-            <label>الحالة الصحية:</label>
-            <select id="healthStatus" onchange="updateProfile()">
-                <option value="none">سليم (لا توجد أمراض)</option>
-                <option value="diabetes">مصاب بالسكري</option>
-            </select>
-            <label>الحساسية:</label>
-            <input type="text" id="allergyInput" placeholder="مثلاً: مكسرات، حليب" oninput="updateProfile()">
-        </div>
-    </div>
-
-    <div class="navbar">
-        <div class="nav-item active" onclick="switchPage('home', this)">🏠<br>الرئيسية</div>
-        <div class="nav-item" onclick="switchPage('camera', this)">📸<br>كاميرا</div>
-        <div class="nav-item" onclick="switchPage('profile', this)">👤<br>الملف الشخصي</div>
+    <div class="nav-bar">
+        <div class="nav-link active" onclick="go('home', this)"><span>🏠</span>الرئيسية</div>
+        <div class="nav-link" onclick="go('scan', this)"><span>📸</span>الفحص</div>
+        <div class="nav-link" onclick="go('profile', this)"><span>👤</span>الملف</div>
     </div>
 
     <script>
-        const mealDB = {
-            pizza: { name: "بيتزا خضار", cal: 280, ing: "دقيق، طماطم، جبن", sugar: "عالي", allergy: "جلوتين، ألبان" },
-            burger: { name: "برجر مشوي", cal: 450, ing: "لحم، خبز، خس", sugar: "متوسط", allergy: "جلوتين" },
-            salad: { name: "سلطة خضراء", cal: 110, ing: "خيار، طماطم، زيت", sugar: "منخفض", allergy: "لا يوجد" }
+        const db = {
+            mandi: { n: "مندي دجاج", c: 620, s: "عالي", i: "أرز، دجاج، بهارات" },
+            shawarma: { n: "شاورما دجاج", c: 420, s: "متوسط", i: "دجاج، خبز، ثوم" },
+            pizza: { n: "بيتزا خضار", c: 290, s: "عالي", i: "عجين، جبن، خضار" },
+            salad: { n: "سلطة يونانية", c: 140, s: "منخفض", i: "خيار، طماطم، جبنة" },
+            pasta: { n: "باستا فرن", c: 510, s: "عالي", i: "مكرونة، كريمة، جبن" },
+            burger: { n: "برجر كلاسيك", c: 540, s: "متوسط", i: "لحم، خبز، صوص" },
+            oats: { n: "شوفان وعسل", c: 310, s: "متوسط", i: "شوفان، حليب، فواكه" },
+            steak: { n: "ستيك مشوي", c: 390, s: "منخفض", i: "لحم، ثوم، زبدة" }
         };
 
-        let userSettings = { name: "المستخدم", status: "none", allergy: "" };
+        let uData = { name: "", status: "normal" };
 
-        function switchPage(pageId, el) {
+        function go(id, el) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
-            document.getElementById(pageId).classList.add('active-page');
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById(id).classList.add('active-page');
+            document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
             el.classList.add('active');
         }
 
-        function updateProfile() {
-            userSettings.name = document.getElementById('userName').value || "المستخدم";
-            userSettings.status = document.getElementById('healthStatus').value;
-            userSettings.allergy = document.getElementById('allergyInput').value;
-            document.getElementById('userNameDisplay').innerText = userSettings.name;
+        function updateU() {
+            uData.name = document.getElementById('uName').value;
+            uData.status = document.getElementById('uStatus').value;
         }
 
-        function handleCapture(event) {
-            const preview = document.getElementById('capturePreview');
-            preview.src = URL.createObjectURL(event.target.files[0]);
-            preview.style.display = 'block';
-            
-            // Simulating AI recognition after picture
+        function handleImg(e) {
+            const p = document.getElementById('prev');
+            p.src = URL.createObjectURL(e.target.files[0]);
+            p.style.display = 'block';
             setTimeout(() => {
-                const mealName = prompt("ماذا أكلت؟ (بيتزا، برجر، سلطة)");
-                if(mealName) showData('camera', mealName);
+                const ask = prompt("تم التعرف على الصورة! ما هي الوجبة؟ (مندي، بيتزا، برجر، شاورما)");
+                const keys = {"مندي":"mandi", "بيتزا":"pizza", "برجر":"burger", "شاورما":"shawarma"};
+                if(keys[ask]) showInfo('scan', keys[ask]);
             }, 500);
         }
 
-        function showData(mode, manualName = "") {
-            const mealKey = mode === 'select' ? document.getElementById('mealSelect').value : manualName;
-            const targetDiv = mode === 'select' ? document.getElementById('resultHome') : document.getElementById('resultCamera');
-            
-            const meal = mealDB[mealKey] || mealDB['pizza']; // Default to pizza if typed wrong
+        function showInfo(loc, key = "") {
+            const k = key || document.getElementById('mealSelect').value;
+            const div = loc === 'home' ? document.getElementById('resHome') : document.getElementById('resScan');
+            if(!k) return;
 
-            let healthWarning = "";
-            if (userSettings.status === 'diabetes' && meal.sugar === 'عالي') {
-                healthWarning = `<div class="warning">⚠️ تنبيه: هذه الوجبة عالية السكر ولا تناسب حالتك (سكري).</div>`;
-            }
-            
-            if (userSettings.allergy && meal.allergy.includes(userSettings.allergy)) {
-                healthWarning += `<div class="warning">⚠️ تحذير: تحتوي الوجبة على (${meal.allergy}) وأنت تعاني من حساسية تجاهها!</div>`;
+            const m = db[k];
+            let warn = "";
+            if(uData.status === 'diab' && m.s === 'عالي') {
+                warn = `<div class="result-box warning-box">⚠️ تنبيه السكري: هذه الوجبة عالية الكربوهيدرات.</div>`;
             }
 
-            targetDiv.innerHTML = `
-                <div class="card">
-                    <h3>📊 تحليل الوجبة: ${meal.name}</h3>
-                    <p>🔥 <strong>السعرات:</strong> ${meal.cal} سعرة</p>
-                    <p>🥗 <strong>المكونات:</strong> ${meal.ing}</p>
-                    ${healthWarning}
-                    <div class="tip">💡 نصيحة: ${meal.cal > 300 ? 'حاول تقليل الكمية والمشي لمدة 20 دقيقة.' : 'وجبة رائعة وخفيفة، استمر!'}</div>
+            div.innerHTML = `
+                <div class="card" style="border-right: 4px solid var(--primary)">
+                    <h3 style="margin:0">${m.n}</h3>
+                    <p>🔥 سعرات: ${m.c} | 🥗 المكونات: ${m.i}</p>
+                    ${warn || '<div class="result-box">✅ وجبة مثالية لبروفايلك!</div>'}
                 </div>
             `;
         }
