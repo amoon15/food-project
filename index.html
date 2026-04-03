@@ -3,115 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NutriScan AI 2026</title>
+    <title>NutriScan AI Pro 2026</title>
     <style>
-        :root { --bg: #0b0f19; --card: #161b2a; --primary: #00d1ff; --text: #ffffff; --danger: #ff4d4d; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 100px; }
-        .header { padding: 40px 20px; text-align: center; background: linear-gradient(to bottom, #161b2a, #0b0f19); border-bottom: 1px solid #2d3748; }
-        .header h1 { margin: 0; font-size: 28px; color: var(--primary); text-shadow: 0 0 15px rgba(0,209,255,0.3); }
+        :root { --bg: #0b0f19; --card: #161b2a; --primary: #00d1ff; --accent: #22c55e; --text: #ffffff; --danger: #ff4d4d; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 100px; overflow-x: hidden; }
+        
+        /* Header */
+        .header { padding: 40px 20px; text-align: center; background: linear-gradient(to bottom, #161b2a, #0b0f19); border-bottom: 1px solid #2d3748; position: sticky; top: 0; z-index: 100; backdrop-filter: blur(10px); }
+        .header h1 { margin: 0; font-size: 26px; color: var(--primary); text-shadow: 0 0 15px rgba(0,209,255,0.3); }
+
         .container { padding: 20px; max-width: 500px; margin: 0 auto; }
-        .card { background: var(--card); border-radius: 25px; padding: 25px; border: 1px solid #2d3748; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        input, select { width: 100%; padding: 15px; border-radius: 15px; border: 1px solid #2d3748; background: #0b0f19; color: white; font-size: 16px; margin-top: 10px; box-sizing: border-box; }
-        .btn-camera { background: var(--primary); color: #0b0f19; border: none; padding: 18px; border-radius: 20px; width: 100%; font-weight: 800; cursor: pointer; font-size: 18px; box-shadow: 0 5px 20px rgba(0,209,255,0.4); }
-        .meal-img { width: 100%; border-radius: 20px; margin-top: 20px; display: none; border: 2px solid var(--primary); }
-        .search-box { display: none; margin-top: 20px; }
-        .nav-bar { position: fixed; bottom: 20px; left: 20px; right: 20px; background: rgba(22, 27, 42, 0.95); backdrop-filter: blur(10px); display: flex; padding: 15px; border-radius: 30px; border: 1px solid #2d3748; }
-        .nav-item { flex: 1; text-align: center; color: #718096; cursor: pointer; font-size: 14px; }
-        .nav-item.active { color: var(--primary); font-weight: bold; }
-        .res-card { margin-top: 20px; padding: 20px; border-radius: 20px; border-right: 5px solid var(--primary); background: rgba(0,209,255,0.05); animation: fadeIn 0.5s; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    </style>
-</head>
-<body>
+        
+        /* Cards */
+        .card { background: var(--card); border-radius: 25px; padding: 20px; border: 1px solid #2d3748; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); transition: 0.3s; }
+        
+        /* Inputs & Buttons */
+        input, select { width: 100%; padding: 15px; border-radius: 15px; border: 1px solid #2d3748; background: #0b0f19; color: white; font-size: 16px; margin-top: 10px; box-sizing: border-box; outline: none; }
+        input:focus { border-color: var(--primary); }
+        
+        .btn-camera { background: linear-gradient(135deg, var(--primary), #0088ff); color: #0b0f19; border: none; padding: 18px; border-radius: 20px; width: 100%; font-weight: 800; cursor: pointer; font-size: 18px; margin-bottom: 10px; }
+        
+        /* Images */
+        .meal-img { width: 100%; border-radius: 20px; margin-top: 15px; display: none; border: 2px solid var(--primary); object-fit: cover; height: 250px; }
 
-    <div class="header">
-        <h1>NutriScan AI</h1>
-        <p style="color: #718096">حلل وجبتك بذكاء</p>
-    </div>
-
-    <div class="container">
-        <div id="scanPage" class="page">
-            <div class="card" style="text-align: center;">
-                <button class="btn-camera" onclick="document.getElementById('camFile').click()">📸 صور الوجبة / ارفع صورة</button>
-                <input type="file" id="camFile" accept="image/*" style="display:none" onchange="startScan(event)">
-                <img id="preview" class="meal-img">
-                
-                <div id="searchArea" class="search-box">
-                    <p>🔍 تعرفنا على الصورة! ابدأ بكتابة اسمها للتأكيد:</p>
-                    <input type="text" id="foodInput" placeholder="مثلاً: ورق عنب، كبسة، سوشي..." oninput="searchFood()">
-                    <div id="suggestions" style="text-align: right; margin-top: 10px;"></div>
-                </div>
-            </div>
-            <div id="resultArea"></div>
-        </div>
-
-        <div id="profilePage" class="page" style="display:none">
-            <div class="card">
-                <h3>👤 الملف الصحي</h3>
-                <label>الحالة الصحية:</label>
-                <select id="healthStat">
-                    <option value="normal">سليم</option>
-                    <option value="diab">مصاب بالسكري</option>
-                </select>
-            </div>
-        </div>
-    </div>
-
-    <div class="nav-bar">
-        <div class="nav-item active" onclick="showPage('scanPage', this)">📸 فحص</div>
-        <div class="nav-item" onclick="showPage('profilePage', this)">👤 ملفي</div>
-    </div>
-
-    <script>
-        // قاعدة بيانات ضخمة للأكلات
-        const foodDB = {
-            "ورق عنب": { cal: 210, sugar: "متوسط", ing: "أرز، ورق عنب، ليمون، زيت زيتون" },
-            "كبسة": { cal: 550, sugar: "عالي", ing: "أرز، دجاج، بهارات، زيت" },
-            "ملوخية": { cal: 150, sugar: "منخفض", ing: "ملوخية، ثوم، مرق دجاج" },
-            "سوشي": { cal: 300, sugar: "منخفض", ing: "أرز، سمك، نوري، صويا" },
-            "بيتزا": { cal: 280, sugar: "عالي", ing: "عجين، جبن، صلصة طماطم" },
-            "برجر": { cal: 450, sugar: "متوسط", ing: "لحم، خبز، خس، جبن" },
-            "سلطة": { cal: 120, sugar: "منخفض", ing: "خضار متنوعة، زيت زيتون" },
-            "جريش": { cal: 400, sugar: "عالي", ing: "قمح، لبن، سمن" },
-            "مكرونة": { cal: 350, sugar: "عالي", ing: "مكرونة، صلصة، بهارات" }
-        };
-
-        function showPage(id, el) {
-            document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
-            document.getElementById(id).style.display = 'block';
-            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-            el.classList.add('active');
-        }
-
-        function startScan(e) {
-            const img = document.getElementById('preview');
-            img.src = URL.createObjectURL(e.target.files[0]);
-            img.style.display = 'block';
-            document.getElementById('searchArea').style.display = 'block';
-        }
-
-        function searchFood() {
-            const val = document.getElementById('foodInput').value;
-            const res = document.getElementById('resultArea');
-            const hStat = document.getElementById('healthStat').value;
-
-            if(foodDB[val]) {
-                const f = foodDB[val];
-                let alertMsg = "";
-                if(hStat === 'diab' && f.sugar === 'عالي') {
-                    alertMsg = `<p style="color:var(--danger)">⚠️ تنبيه: هذه الوجبة غير مناسبة لمرضى السكري.</p>`;
-                }
-
-                res.innerHTML = `
-                    <div class="res-card">
-                        <h3>📊 تحليل الوجبة: ${val}</h3>
-                        <p>🔥 السعرات: ${f.cal} سعرة</p>
-                        <p>🥗 المكونات: ${f.ing}</p>
-                        ${alertMsg || '<p style="color:var(--primary)">✅ وجبة مناسبة لبروفايلك الصحي.</p>'}
-                    </div>
-                `;
-            }
-        }
-    </script>
-</body>
-</html>
+        /* Navigation */
+        .nav-bar { position
